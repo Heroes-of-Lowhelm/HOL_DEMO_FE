@@ -34,7 +34,7 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding-bottom: 100px;
+    padding-bottom: 200px;
 }
 .totalNetworkContainer {
     background-image: url("./assets/images/staking/fill.png");
@@ -44,6 +44,9 @@ button {
     padding: 30px;
     margin: 15px;
     color: #dac799;
+}
+.colorYellow {
+    color: #dac799 !important;
 }
 .font-bold {
     font-weight: bold;
