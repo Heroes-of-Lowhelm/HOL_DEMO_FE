@@ -7,7 +7,7 @@ body {
     height: 100vh;
     background-image: url("assets/images/staking/hero-section-bg.jpg");
     background-position: center;
-    background-size: contain;
+    background-size: cover;
 }
 label {
     display:block;
@@ -36,6 +36,17 @@ button {
     justify-content: space-between;
     padding-bottom: 100px;
 }
+.totalNetworkContainer {
+    background-image: url("./assets/images/staking/fill.png");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 30px;
+    color: #dac799;
+}
+.stakeFormSection {
+    margin-bottom: 20px;
+}
 .loadingContainer {
     display: flex;
     flex-direction: row;
@@ -45,6 +56,6 @@ button {
 .oneLineFlex {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }

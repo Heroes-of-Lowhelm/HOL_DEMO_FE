@@ -2,6 +2,7 @@ import './main.css';
 import React from "react";
 import {Container, Row, Col} from 'react-grid-system';
 import ReactLoading from 'react-loading';
+import {Button} from "@mui/material";
 
 const {Zilliqa} = require('@zilliqa-js/zilliqa');
 const {BN, Long, units} = require('@zilliqa-js/util');
@@ -687,190 +688,43 @@ class App extends React.Component {
         return (
             <div className="container">
                 <div className="headerContainer">
-                    <h1>Test Mint/Evolve/Stake of HOL</h1>
                     {this.state.account === "" ?
                         <button id="btnConnectZilPay" onClick={this.connectZilPay}>Connect ZilPay</button> : <></>}
                 </div>
-                {this.state.account !== "" ? <Container>
+                <Container>
                     <Row>
-                        <Col sm={12}>
-                            <h2>Mint Testing</h2>
+                        <Col sm={12} md={6}>
+                            <div className="totalNetworkContainer">
+                                <div className="stakeFormSection">
+                                    <h1>Add stake</h1>
+                                    <div className="oneLineFlex">
+                                        <input type="number"/>
+                                    </div>
+                                    <div className="oneLineFlex">
+                                        <Button variant="contained">Stake</Button>;
+                                    </div>
+                                </div>
+                                <div className="stakeFormSection">
+                                    <h1>Add stake</h1>
+                                    <div className="oneLineFlex">
+                                        <input type="number"/>
+                                    </div>
+                                    <div className="oneLineFlex">
+                                        <button id="btnNotarize">Stake</button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingH13Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.mint13Heroes}>Mint 1* ~ 3* Heroes</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
+                        <Col sm={12} md={6}>
                             {
                                 this.state.isLoadingH35Mint ?
                                     <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
                                     <button id="btnNotarize" onClick={this.mint35Heroes}>Mint 3* ~ 5* Heroes</button>
                             }
                         </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingHDLMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.mintDLHeroes}>Mint Dark/Light Heroes</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingG13Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.mint13Gears}>Mint 1* ~ 3* Gears</button>
-                            }
-
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingG35Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.mint35Gears}>Mint 3* ~ 5* Gears</button>
-                            }
-
-                        </Col>
-
-
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingH13BatchMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.batchMint13Heroes}>Batch Mint 1* ~ 3* Heroes</button>
-                            }
-
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingH35BatchMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.batchMint35Heroes}>Batch Mint 3* ~ 5* Heroes</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingG13BatchMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.batchMint13Gears}>Batch Mint 1* ~ 3* Gears</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingG35BatchMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.batchMint35Gears}>Batch Mint 3* ~ 5* Gears</button>
-                            }
-                        </Col>
                     </Row>
-                </Container> : <></>}
-
-                {this.state.account !== "" ? <Container>
-                    <Row>
-                        <Col sm={12}>
-                            <h2>Evolution Testing</h2>
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingHeroesEvolution ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.handleHeroesEvolution}>Evolve Heroes</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            <div className={'oneLineFlex'}>
-                                <label style={{width: '100px'}}>MAX ID</label>
-                                <input type={'number'} value={this.state.heroesEvMax} onChange={e => this.setState({heroesEvMax: e.target.value})}></input>
-                            </div>
-                            <div className={'oneLineFlex'}>
-                                <label style={{width: '100px'}}>ANY ID</label>
-                                <input type={'number'} value={this.state.heroesEvAny} onChange={e => this.setState({heroesEvAny: e.target.value})}></input>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingDLHeroesEvolution ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.handleDLHeroesEvolution}>Evolve Dark/Light Heroes</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            <div className={'oneLineFlex'}>
-                                <label style={{width: '100px'}}>MAX ID</label>
-                                <input type={'number'} value={this.state.dlHeroesEvMax} onChange={e => this.setState({dlHeroesEvMax: e.target.value})}></input>
-                            </div>
-                            <div className={'oneLineFlex'}>
-                                <label style={{width: '100px'}}>ANY ID</label>
-                                <input type={'number'} value={this.state.dlHeroesEvAny} onChange={e => this.setState({dlHeroesEvAny: e.target.value})}></input>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingGearsEvolution ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.handleGearsEvolution}>Evolve Gears</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            <div className={'oneLineFlex'}>
-                                <label style={{width: '100px'}}>MAX ID</label>
-                                <input type={'number'} value={this.state.gearsEvMax} onChange={e => this.setState({gearsEvMax: e.target.value})}></input>
-                            </div>
-                            <div className={'oneLineFlex'}>
-                                <label style={{width: '100px'}}>ANY ID</label>
-                                <input type={'number'} value={this.state.gearsEvAny} onChange={e => this.setState({gearsEvAny: e.target.value})}></input>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container> : <></>}
-              {/*  {this.state.account !== "" ? <Container>
-                    <Row>
-                        <Col sm={12}>
-                            <h2>Staking</h2>
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingH13Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.stake}>Stake</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingH35Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.unstake}>Unstake</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingH35Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.withdrawUnstake}>Withdraw Unstaked</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6} lg={4}>
-                            {
-                                this.state.isLoadingHDLMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.claimRewards}>Claim Rewards</button>
-                            }
-                        </Col>
-                        <Col sm={12} md={6}>
-                            {
-                                this.state.isLoadingHDLMint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.depositDist}>Deposit Distributions(Only admins can do this)</button>
-                            }
-                        </Col>
-                    </Row>
-                </Container> : <></>}*/}
+                </Container>
             </div>
         );
     }
