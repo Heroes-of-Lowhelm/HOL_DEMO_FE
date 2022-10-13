@@ -2,7 +2,8 @@ import './main.css';
 import React from "react";
 import {Container, Row, Col} from 'react-grid-system';
 import ReactLoading from 'react-loading';
-import {Button} from "@mui/material";
+import {Button, FilledInput, FormControl, IconButton, InputAdornment, InputLabel} from "@mui/material";
+import {Visibility} from "@mui/icons-material";
 
 const {Zilliqa} = require('@zilliqa-js/zilliqa');
 const {BN, Long, units} = require('@zilliqa-js/util');
@@ -696,32 +697,82 @@ class App extends React.Component {
                         <Col sm={12} md={6}>
                             <div className="totalNetworkContainer">
                                 <div className="stakeFormSection">
-                                    <h1>Add stake</h1>
+                                    <p className="font-bold">Add stake</p>
                                     <div className="oneLineFlex">
-                                        <input type="number"/>
+                                        <FormControl fullWidth sx={{ m: 1}} variant="outlined">
+                                            <InputLabel htmlFor="filled-adornment-password">Amount</InputLabel>
+                                            <FilledInput
+                                                id="filled-adornment-password"
+                                                type="number"
+                                                // value={values.password}
+                                                // onChange={handleChange('password')}
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="max amount"
+                                                            // onClick={handleClickShowPassword}
+                                                            edge="end"
+                                                        >
+                                                            <Button>MAX</Button>
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                            />
+                                        </FormControl>
                                     </div>
                                     <div className="oneLineFlex">
-                                        <Button variant="contained">Stake</Button>;
+                                        <Button sx={{m: 1, width: '25ch'}} variant="contained">Stake</Button>
                                     </div>
                                 </div>
                                 <div className="stakeFormSection">
-                                    <h1>Add stake</h1>
+                                    <p className="font-bold">Remove Stake</p>
                                     <div className="oneLineFlex">
-                                        <input type="number"/>
+                                        <FormControl fullWidth sx={{ m: 1}} variant="outlined">
+                                            <InputLabel htmlFor="filled-adornment-password">Amount</InputLabel>
+                                            <FilledInput
+                                                id="filled-adornment-password"
+                                                type="number"
+                                                // value={values.password}
+                                                // onChange={handleChange('password')}
+                                            />
+                                        </FormControl>
                                     </div>
                                     <div className="oneLineFlex">
-                                        <button id="btnNotarize">Stake</button>
+                                        <Button sx={{m: 1, width: '25ch'}} variant="contained">Unstake</Button>
                                     </div>
                                 </div>
                             </div>
 
                         </Col>
                         <Col sm={12} md={6}>
-                            {
-                                this.state.isLoadingH35Mint ?
-                                    <ReactLoading type={"balls"} color={'gray'}></ReactLoading> :
-                                    <button id="btnNotarize" onClick={this.mint35Heroes}>Mint 3* ~ 5* Heroes</button>
-                            }
+                            <Row>
+                                <Col sm={12}>
+                                    <div className="totalNetworkContainer">
+                                        <div className="oneLineBetween">
+                                            <p className="font-bold">My $HOL Staking: </p>
+                                            <p>CONNECT WALLET TO SEE ADDRESS</p>
+                                        </div>
+                                        <p>TOTAL STACKED</p>
+                                        <p>100,000</p>
+                                        <Button fullWidth sx={{ m: 1}} variant="contained">Connect to Zilpay Wallet</Button>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col sm={6}>
+                                    <div className="totalNetworkContainer">
+                                        <p><span className="font-bold">OVERALL NETWORK STAKED: </span>$HOL</p>
+                                        <p>100,000</p>
+                                    </div>
+                                </Col>
+                                <Col sm={6}>
+                                    <div className="totalNetworkContainer">
+                                        <p><span className="font-bold">ESTIMATED REWARDS: </span>$HOL</p>
+                                        <p>100,000</p>
+                                        <Button fullWidth size="small" variant="contained" style={{textTransform: "none"}}>Claim Rewards!</Button>
+                                    </div>
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
                 </Container>

@@ -42,7 +42,11 @@ button {
     background-size: cover;
     background-repeat: no-repeat;
     padding: 30px;
+    margin: 15px;
     color: #dac799;
+}
+.font-bold {
+    font-weight: bold;
 }
 .stakeFormSection {
     margin-bottom: 20px;
@@ -57,5 +61,11 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+}
+.oneLineBetween {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
 }
