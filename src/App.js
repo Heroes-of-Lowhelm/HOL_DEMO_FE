@@ -357,7 +357,7 @@ class App extends React.Component {
                                     <div className="totalNetworkContainer">
                                         <p><span className="font-bold">ESTIMATED REWARDS: </span>$HOL</p>
                                         {this.state.account !== "" ? <p>{ this.state.rewardAmount }</p> : <p>---</p>}
-                                        <Button fullWidth size="small" variant="contained" style={{textTransform: "none"}} onClick={this.claimRewards}>Claim Rewards!</Button>
+                                        <Button fullWidth size="small" variant="contained" style={{textTransform: "none"}} onClick={this.claimRewards} disabled={this.state.account === ""}>Claim Rewards!</Button>
                                     </div>
                                 </Col>
                             </Row>
