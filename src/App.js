@@ -2,7 +2,8 @@ import './main.css';
 import React from "react";
 import {Container, Row, Col} from 'react-grid-system';
 import ReactLoading from 'react-loading';
-import {Button, FilledInput, FormControl, IconButton, InputAdornment, InputLabel} from "@mui/material";
+import {Button, FilledInput, FormControl, InputAdornment, InputLabel} from "@mui/material";
+import {MessageType, StatusType} from "@zilliqa-js/zilliqa";
 
 
 const {Zilliqa} = require('@zilliqa-js/zilliqa');
@@ -22,7 +23,8 @@ class App extends React.Component {
 
         this.state = {
             account: "",
-            isLoadingStake: false,
+            isLoadingStaking: false,
+            isLoadingUnstaking: false,
             stakeAmount: "",
             unstakeAmount: "",
             holBalance: 0,
@@ -73,10 +75,53 @@ class App extends React.Component {
             if (isNeedToIncrease) {
                 await this.increaseAllowance();
             }
+            this.subscribeStakingEvents();
         } else {
             console.log("Cannot Find ZilPay")
         }
     }
+
+    subscribeStakingEvents = () => {
+        // use https://api.zilliqa.com/ for Mainnet
+        const zilliqa = new Zilliqa('https://dev-api.zilliqa.com');
+        const subscriber =
+            zilliqa.subscriptionBuilder.buildEventLogSubscriptions(
+                'wss://dev-ws.zilliqa.com',
+                // use wss://api-ws.zilliqa.com for Mainnet
+                {
+                    addresses: [StakingAddress],
+                }
+            );
+        // subscribed successfully
+        subscriber.emitter.on(StatusType.SUBSCRIBE_EVENT_LOG,
+            (event) => {
+                console.log('Subscribed: ', event);
+            });
+        // fired when an event is received
+        subscriber.emitter.on(MessageType.EVENT_LOG,
+            async (event) => {
+                console.log('get new event log: ', JSON.stringify(event));
+                if ("value" in event) {
+                    for (let eventObj of event["value"][0]["event_logs"]) {
+                        if (eventObj["_eventname"] === "StakeSuccess") {
+                            this.setState({isLoadingStaking: false});
+                            await this.checkAccountInformation();
+                        }
+                        if (eventObj["_eventname"] === "UnstakeSuccess") {
+                            this.setState({isLoadingUnstaking: false});
+                            await this.checkAccountInformation();
+                        }
+                    }
+                }
+            });
+        // unsubscribed successfully
+        subscriber.emitter.on(MessageType.UNSUBSCRIBE, (event) => {
+            console.log('Unsubscribed: ', event);
+        });
+        subscriber.start().then(r => {
+            console.log(r);
+        });
+    };
 
     checkAccountInformation = async () => {
         const zilliqa = new Zilliqa('https://dev-api.zilliqa.com');
@@ -150,6 +195,7 @@ class App extends React.Component {
             alert("Stake amount must be not zero");
             return;
         }
+        this.setState({ isLoadingStaking: true });
         const stakeAmountString = (this.state.stakeAmount * 100000).toString(10);
         const stakingAddress = window.zilPay.contracts.at(StakingAddress);
         try {
@@ -172,6 +218,7 @@ class App extends React.Component {
             )
         } catch (e) {
             console.log(e);
+            this.setState({ isLoadingStaking: false });
         }
     }
     unstake = async () => {
@@ -179,6 +226,7 @@ class App extends React.Component {
             alert("Unstake amount must be not zero");
             return;
         }
+        this.setState({ isLoadingUnstaking: true });
         const unstakeAmountString = (this.state.unstakeAmount * 100000).toString(10);
         const stakingAddress = window.zilPay.contracts.at(StakingAddress);
         try {
@@ -198,19 +246,13 @@ class App extends React.Component {
                     gasPrice: units.toQa('2000', units.Units.Li),
                     gasLimit: Long.fromNumber(8000)
                 }
-            )
+            );
         } catch (e) {
             console.log(e);
+            this.setState({ isLoadingUnstaking: false });
         }
     }
-    withdrawUnstake = () => {
-
-    }
     claimRewards = () => {
-
-    }
-    depositDist = () => {
-
     }
     handleChange = (field) => (event) => {
         this.setState({[field]: event.target.value });
@@ -244,7 +286,11 @@ class App extends React.Component {
                                         </FormControl>
                                     </div>
                                     <div className="oneLineFlex">
-                                        <Button sx={{m: 1, width: '25ch'}} variant="contained" onClick={() => this.stakeHol()}>Stake</Button>
+                                        {
+                                            this.state.isLoadingStaking ?
+                                                <ReactLoading type={"balls"} color={'yellow'} /> :
+                                                <Button sx={{m: 1, width: '25ch'}} variant="contained" onClick={() => this.stakeHol()} disabled={this.state.account === ""}>Stake</Button>
+                                        }
                                     </div>
                                 </div>
                                 <div className="stakeFormSection">
@@ -258,13 +304,15 @@ class App extends React.Component {
                                                 value={this.state.unstakeAmount}
                                                 onChange={this.handleChange('unstakeAmount')}
                                                 classes={{root: "colorYellow"}}
-                                                // value={values.password}
-                                                // onChange={handleChange('password')}
                                             />
                                         </FormControl>
                                     </div>
                                     <div className="oneLineFlex">
-                                        <Button sx={{m: 1, width: '25ch'}} variant="contained" onClick={() => this.unstake()}>Unstake</Button>
+                                        {
+                                            this.state.isLoadingUnstaking ?
+                                                <ReactLoading type={"balls"} color={'yellow'}/> :
+                                                <Button sx={{m: 1, width: '25ch'}} variant="contained" onClick={() => this.unstake()} disabled={this.state.account === ""}>Unstake</Button>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -295,7 +343,7 @@ class App extends React.Component {
                                     <div className="totalNetworkContainer">
                                         <p><span className="font-bold">ESTIMATED REWARDS: </span>$HOL</p>
                                         <p>100,000</p>
-                                        <Button fullWidth size="small" variant="contained" style={{textTransform: "none"}}>Claim Rewards!</Button>
+                                        <Button fullWidth size="small" variant="contained" style={{textTransform: "none"}} onClick={this.claimRewards}>Claim Rewards!</Button>
                                     </div>
                                 </Col>
                             </Row>
