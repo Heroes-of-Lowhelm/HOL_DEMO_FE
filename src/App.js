@@ -24,7 +24,10 @@ class App extends React.Component {
             account: "",
             isLoadingStake: false,
             stakeAmount: "",
-            holBalance: 0
+            holBalance: 0,
+            totalStackedAmount: 0,
+            stakedAmount: 0,
+            unstakedAmount: 0,
         };
 
     }
@@ -76,16 +79,39 @@ class App extends React.Component {
 
     checkAccountInformation = async () => {
         const zilliqa = new Zilliqa('https://dev-api.zilliqa.com');
-        const holTokenAddress = zilliqa.contracts.at(HOLAddress);
-        const contractState = await holTokenAddress.getState();
+        const holTokenAContract = zilliqa.contracts.at(HOLAddress);
+        const holContractState = await holTokenAContract.getState();
         const thisAddress = this.state.account.toLowerCase();
-        const allowance = contractState['allowances'][thisAddress][StakingAddress];
-        const holBalanceString = contractState['balances'][thisAddress];
+
+        const holBalanceString = holContractState['balances'][thisAddress];
         const holBalanceFormatted = parseFloat(holBalanceString) / 100000;
         this.setState({holBalance: holBalanceFormatted});
-        console.log("allowance==========>", allowance, holBalanceFormatted);
-        if (allowance && allowance !== "0") {
-            return false;
+
+        const stakeContract = zilliqa.contracts.at(StakingAddress);
+        const stakeContractState = await stakeContract.getState();
+
+        // Total Staked Amount
+        const totalStakedAmountString = stakeContractState['total_staked_amount'];
+        const totalStakedAmountStringFormatted = parseFloat(totalStakedAmountString) / 100000;
+        this.setState({totalStackedAmount: totalStakedAmountStringFormatted})
+
+        if (stakeContractState['records'][thisAddress]) {
+            console.log("===========>", stakeContractState['records'][thisAddress])
+            // Staked Amount
+            const stakedAmountString = stakeContractState['records'][thisAddress]['arguments'][0];
+            const stakedAmountStringFormatted = parseFloat(stakedAmountString) / 100000;
+            this.setState({ stakedAmount: stakedAmountStringFormatted});
+
+            // Unstaked Amount
+            const unstakedAmountString = stakeContractState['records'][thisAddress]['arguments'][1];
+            const unstakedAmountStringFormatted = parseFloat(unstakedAmountString) / 100000;
+            this.setState({ unstakedAmount: unstakedAmountStringFormatted});
+        }
+        if (holContractState['allowances'][thisAddress]) {
+            const allowance = holContractState['allowances'][thisAddress][StakingAddress];
+            if (allowance && allowance !== "0") {
+                return false;
+            }
         }
         return true;
     };
@@ -118,16 +144,18 @@ class App extends React.Component {
             console.log(e);
         }
     }
-    stakeHol = () => {
+    stakeHol = async () => {
+        console.log("stake hol", this.state.stakeAmount);
+        const stakeAmountString = (this.state.stakeAmount * 100000).toString(10);
         const stakingAddress = window.zilPay.contracts.at(StakingAddress);
         try {
-            stakingAddress.call(
+            await stakingAddress.call(
                 'Stake',
                 [
                     {
                         vname: 'amount',
                         type: 'Uint128',
-                        value: this.state.stakeAmount
+                        value: stakeAmountString
                     }
                 ],
                 {
@@ -189,7 +217,7 @@ class App extends React.Component {
                                         </FormControl>
                                     </div>
                                     <div className="oneLineFlex">
-                                        <Button sx={{m: 1, width: '25ch'}} variant="contained">Stake</Button>
+                                        <Button sx={{m: 1, width: '25ch'}} variant="contained" onClick={() => this.stakeHol()}>Stake</Button>
                                     </div>
                                 </div>
                                 <div className="stakeFormSection">
@@ -221,7 +249,7 @@ class App extends React.Component {
                                             <p>{this.state.account === "" ? "CONNECT WALLET TO SEE ADDRESS" : '$HOL   ' + this.state.holBalance}</p>
                                         </div>
                                         <p>TOTAL STACKED</p>
-                                        {this.state.account !== "" ? <p>100,000</p> : <p>---</p>}
+                                        {this.state.account !== "" ? <p>{ this.state.stakedAmount }</p> : <p>---</p>}
                                         <Button fullWidth sx={{ m: 1}} variant="contained" onClick={this.connectZilPay} disabled={this.state.account !== ""}>Connect to Zilpay Wallet</Button>
                                     </div>
                                 </Col>
@@ -230,7 +258,7 @@ class App extends React.Component {
                                 <Col sm={6}>
                                     <div className="totalNetworkContainer">
                                         <p><span className="font-bold">OVERALL NETWORK STAKED: </span>$HOL</p>
-                                        <p>100,000</p>
+                                        <p>{this.state.totalStackedAmount}</p>
                                     </div>
                                 </Col>
                                 <Col sm={6}>
