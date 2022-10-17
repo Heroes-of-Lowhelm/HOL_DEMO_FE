@@ -31,6 +31,7 @@ class App extends React.Component {
             totalStackedAmount: 0,
             stakedAmount: 0,
             unstakedAmount: 0,
+            rewardAmount: 0,
         };
 
     }
@@ -111,6 +112,9 @@ class App extends React.Component {
                             this.setState({isLoadingUnstaking: false});
                             await this.checkAccountInformation();
                         }
+                        if (eventObj["_eventname"] === "DepositSuccess") {
+                            await this.checkAccountInformation();
+                        }
                     }
                 }
             });
@@ -142,7 +146,6 @@ class App extends React.Component {
         this.setState({totalStackedAmount: totalStakedAmountStringFormatted})
 
         if (stakeContractState['records'][thisAddress]) {
-            console.log("===========>", stakeContractState['records'][thisAddress])
             // Staked Amount
             const stakedAmountString = stakeContractState['records'][thisAddress]['arguments'][0];
             const stakedAmountStringFormatted = parseFloat(stakedAmountString) / 100000;
@@ -153,6 +156,17 @@ class App extends React.Component {
             const unstakedAmountStringFormatted = parseFloat(unstakedAmountString) / 100000;
             this.setState({ unstakedAmount: unstakedAmountStringFormatted});
         }
+
+        // reward_amounts
+        if (stakeContractState['reward_amounts'][HOLAddress]) {
+            console.log("===========>", stakeContractState['reward_amounts'][HOLAddress]);
+            if (stakeContractState['reward_amounts'][HOLAddress][thisAddress]) {
+                const rewardAmountString = stakeContractState['reward_amounts'][HOLAddress][thisAddress];
+                const rewardAmountStringFormat = parseFloat(rewardAmountString) / 100000;
+                this.setState({ rewardAmount: rewardAmountStringFormat });
+            }
+        }
+
         if (holContractState['allowances'][thisAddress]) {
             const allowance = holContractState['allowances'][thisAddress][StakingAddress];
             if (allowance && allowance !== "0") {
@@ -342,7 +356,7 @@ class App extends React.Component {
                                 <Col sm={6}>
                                     <div className="totalNetworkContainer">
                                         <p><span className="font-bold">ESTIMATED REWARDS: </span>$HOL</p>
-                                        <p>100,000</p>
+                                        {this.state.account !== "" ? <p>{ this.state.rewardAmount }</p> : <p>---</p>}
                                         <Button fullWidth size="small" variant="contained" style={{textTransform: "none"}} onClick={this.claimRewards}>Claim Rewards!</Button>
                                     </div>
                                 </Col>
