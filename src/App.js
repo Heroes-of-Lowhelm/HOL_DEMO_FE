@@ -24,6 +24,7 @@ class App extends React.Component {
             account: "",
             isLoadingStake: false,
             stakeAmount: "",
+            unstakeAmount: "",
             holBalance: 0,
             totalStackedAmount: 0,
             stakedAmount: 0,
@@ -145,7 +146,10 @@ class App extends React.Component {
         }
     }
     stakeHol = async () => {
-        console.log("stake hol", this.state.stakeAmount);
+        if  (this.state.stakeAmount === "" || this.state.stakeAmount === "0") {
+            alert("Stake amount must be not zero");
+            return;
+        }
         const stakeAmountString = (this.state.stakeAmount * 100000).toString(10);
         const stakingAddress = window.zilPay.contracts.at(StakingAddress);
         try {
@@ -170,11 +174,34 @@ class App extends React.Component {
             console.log(e);
         }
     }
-    stake = () => {
-        this.setState({isLoadingStake: true});
-    }
-    unstake = () => {
-
+    unstake = async () => {
+        if (this.state.unstakeAmount === "" || this.state.unstakeAmount === "0") {
+            alert("Unstake amount must be not zero");
+            return;
+        }
+        const unstakeAmountString = (this.state.unstakeAmount * 100000).toString(10);
+        const stakingAddress = window.zilPay.contracts.at(StakingAddress);
+        try {
+            await stakingAddress.call(
+                'Unstake',
+                [
+                    {
+                        vname: 'amount',
+                        type: 'Uint128',
+                        value: unstakeAmountString
+                    }
+                ],
+                {
+                    version: 21823489,   // For mainnet, it is 65537
+                                         // For testnet, it is 21823489
+                    amount: new BN(0),
+                    gasPrice: units.toQa('2000', units.Units.Li),
+                    gasLimit: Long.fromNumber(8000)
+                }
+            )
+        } catch (e) {
+            console.log(e);
+        }
     }
     withdrawUnstake = () => {
 
@@ -228,13 +255,16 @@ class App extends React.Component {
                                             <FilledInput
                                                 id="filled-adornment-password"
                                                 type="number"
+                                                value={this.state.unstakeAmount}
+                                                onChange={this.handleChange('unstakeAmount')}
+                                                classes={{root: "colorYellow"}}
                                                 // value={values.password}
                                                 // onChange={handleChange('password')}
                                             />
                                         </FormControl>
                                     </div>
                                     <div className="oneLineFlex">
-                                        <Button sx={{m: 1, width: '25ch'}} variant="contained">Unstake</Button>
+                                        <Button sx={{m: 1, width: '25ch'}} variant="contained" onClick={() => this.unstake()}>Unstake</Button>
                                     </div>
                                 </div>
                             </div>
